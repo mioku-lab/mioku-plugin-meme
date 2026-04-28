@@ -11,6 +11,16 @@ function cloneConfig<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+function normalizeErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === "string") return error;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
 function stripCommandPrefix(
   text: string,
   prefixes: string[],
@@ -59,7 +69,13 @@ const memePlugin = definePlugin({
       event: any,
       instruction: string,
       fallbackMessage?: string,
+      error?: unknown,
     ) => {
+      if (error != null) {
+        ctx.logger.error(
+          `[meme] ${instruction}\n执行错误: ${normalizeErrorMessage(error)}`,
+        );
+      }
       const chatRuntime = aiService?.getChatRuntime();
       if (chatRuntime) {
         try {
@@ -76,8 +92,8 @@ const memePlugin = definePlugin({
             ],
           });
           return;
-        } catch (error) {
-          ctx.logger.warn(`meme notice 发送失败 ${error}`);
+        } catch (noticeError) {
+          ctx.logger.error(`meme notice 发送失败 ${noticeError}`);
         }
       }
 
@@ -230,6 +246,7 @@ const memePlugin = definePlugin({
               event,
               `meme 缓存刷新失败，错误信息：${error}。请自然告知用户稍后重试或让管理员检查 meme API 服务状态。`,
               `刷新 meme 缓存失败：${error}`,
+              error,
             );
           }
           return;
@@ -339,6 +356,7 @@ const memePlugin = definePlugin({
           event,
           `meme 插件执行失败，错误信息：${error}。请自然告诉用户当前处理失败并建议稍后重试`,
           `meme 插件执行失败：${error}`,
+          error,
         );
       }
     });
