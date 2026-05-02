@@ -85,9 +85,9 @@ const memePlugin = definePlugin({
             send: true,
             promptInjections: [
               {
-                title: "Meme Plugin Error Handling",
+                title: "Meme Plugin Notice",
                 content:
-                  "You are responding for meme plugin validation or execution failure. Keep it brief, natural, and actionable.",
+                  "A meme-related action was triggered. Judge whether the user likely intended this action or triggered it accidentally. If it looks accidental or like a casual mention, weave a natural reply into the conversation without mentioning the plugin, tools, or commands. If the user seems to want this feature, respond helpfully. Keep it brief and natural.",
               },
             ],
           });
