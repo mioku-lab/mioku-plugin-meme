@@ -3,8 +3,18 @@
   "version": "1.0.0",
   "description": "基于 meme-generator API 的表情包制作插件",
   "main": "index.ts",
+  "keywords": [
+    "mioku"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mioku-lab/mioku-plugin-meme.git"
+  },
   "mioku": {
-    "services": ["config", "ai"],
+    "services": [
+      "config",
+      "ai"
+    ],
     "help": {
       "title": "Meme 表情包",
       "description": "接入 meme-generator API 的表情包制作插件",
