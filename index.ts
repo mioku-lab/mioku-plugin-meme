@@ -76,6 +76,11 @@ const memePlugin = definePlugin({
           `[meme] ${instruction}\n执行错误: ${normalizeErrorMessage(error)}`,
         );
       }
+      const rawText = ctx.text(event)?.trim() ?? "";
+      const hasSlashPrefix = baseConfig.trigger.prefixes.some((p: string) => rawText.startsWith(p));
+      if (!hasSlashPrefix) {
+        return;
+      }
       const chatRuntime = aiService?.getChatRuntime();
       if (chatRuntime) {
         try {
