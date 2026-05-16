@@ -78,7 +78,7 @@ fields:
 
 ```mioku-fields
 keys:
-  - base.api.baseU
+  - base.api.baseUrl
   - base.api.timeoutMs
   - base.trigger.requirePrefix
   - base.trigger.prefixes
