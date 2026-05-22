@@ -1,4 +1,4 @@
-import type { AISkill, AITool } from "../../src";
+import type { AISkill, AITool } from "mioku";
 import type { MemeImageSourceOptions } from "./types";
 import { getMemeRuntimeState } from "./runtime";
 

@@ -1,5 +1,4 @@
-import type { AIService } from "../../src/services/ai/types";
-import type { ConfigService } from "../../src/services/config/tpyes";
+import type { AIService, ConfigService } from "mioku";
 import { definePlugin, type MiokiContext } from "mioki";
 import { MEME_BASE_CONFIG } from "./configs/base";
 import { MEME_FILTER_CONFIG } from "./configs/filters";
