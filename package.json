@@ -1,6 +1,6 @@
 {
   "name": "mioku-plugin-meme",
-  "version": "0.8.0",
+  "version": "2.0.0",
   "description": "基于 meme-generator API 的表情包制作插件",
   "main": "index.ts",
   "type": "module",
