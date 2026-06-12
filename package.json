@@ -1,6 +1,6 @@
 {
   "name": "mioku-plugin-meme",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "基于 meme-generator API 的表情包制作插件",
   "main": "index.ts",
   "type": "module",
@@ -15,6 +15,28 @@
     "services": [
       "config",
       "ai"
+    ],
+    "accessHooks": [
+      {
+        "id": "meme-菜单",
+        "match": "/^\\/meme\\s*菜单/"
+      },
+      {
+        "id": "meme-搜索",
+        "match": "/^\\/meme\\s*搜索/"
+      },
+      {
+        "id": "meme-详情",
+        "match": "/^\\/meme\\s*详情/"
+      },
+      {
+        "id": "meme-更新",
+        "match": "/^\\/meme\\s*更新/"
+      },
+      {
+        "id": "随机表情",
+        "match": "/^\\/随机表情/"
+      }
     ],
     "help": {
       "title": "Meme 表情包",
