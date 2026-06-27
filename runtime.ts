@@ -14,11 +14,11 @@ const MEME_PLUGIN_NAME = "meme";
 export function setMemeRuntimeState(
   nextState: MemeRuntimeState,
 ): MemeRuntimeState {
-  return setPluginRuntimeState<MemeRuntimeState>(MEME_PLUGIN_NAME, nextState);
+  return setPluginRuntimeState(MEME_PLUGIN_NAME, nextState) as MemeRuntimeState;
 }
 
 export function getMemeRuntimeState(): MemeRuntimeState {
-  return getPluginRuntimeState<MemeRuntimeState>(MEME_PLUGIN_NAME);
+  return getPluginRuntimeState(MEME_PLUGIN_NAME) as MemeRuntimeState;
 }
 
 export function resetMemeRuntimeState(): void {
