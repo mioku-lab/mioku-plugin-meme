@@ -76,7 +76,7 @@
           "cmd": "/meme 更新",
           "desc": "刷新远端表情缓存",
           "usage": "/meme 更新",
-          "role": "owner"
+          "role": "master"
         }
       ]
     }
