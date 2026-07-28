@@ -59,7 +59,7 @@ const memeSkills: AISkill[] = [
   {
     name: "meme",
     description:
-      "搜索,制作和发送各种各样的表情包,可以使用聊天中的图片或用户头像制作,如制作摸别人活其他的表情",
+      "搜索,制作和发送各种各样的整蛊群友的表情包,可以使用聊天中的图片或用户头像制作",
     permission: "member",
     tools: [
       {
