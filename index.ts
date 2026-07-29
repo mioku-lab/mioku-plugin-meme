@@ -147,7 +147,7 @@ const memePlugin = definePlugin({
       );
     }
 
-    ctx.handle("message", async (event: any) => {
+    ctx.handle("message", async (event) => {
       const rawText = ctx.text(event)?.trim();
       if (!rawText) {
         return;
