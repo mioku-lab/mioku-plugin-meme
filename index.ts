@@ -3,8 +3,8 @@ import { definePlugin, type MiokiContext } from "mioki";
 import { MEME_BASE_CONFIG } from "./configs/base";
 import { MEME_FILTER_CONFIG } from "./configs/filters";
 import { MemePluginRuntime, replyWithParts } from "./shared";
-import { resetMemeRuntimeState, setMemeRuntimeState } from "./runtime";
 import type { MemeBaseConfig, MemeFilterConfig } from "./types";
+import { createMemeSkills } from "./skills/meme";
 
 function cloneConfig<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
@@ -123,7 +123,9 @@ const memePlugin = definePlugin({
       );
     }
 
-    setMemeRuntimeState({ runtime });
+    if (aiService) {
+      for (const skill of createMemeSkills(runtime)) aiService.registerSkill(skill);
+    }
 
     const disposers: Array<() => void> = [];
     if (configService) {
@@ -366,10 +368,8 @@ const memePlugin = definePlugin({
     });
 
     return () => {
-      for (const dispose of disposers) {
-        dispose();
-      }
-      resetMemeRuntimeState();
+      for (const dispose of disposers) dispose();
+      if (aiService) aiService.removeSkill("meme");
       ctx.logger.info("meme 插件已卸载");
     };
   },
