@@ -1,5 +1,9 @@
-import type { AIService, ConfigService } from "mioku";
-import { definePlugin, type MiokiContext } from "mioki";
+import {
+  definePlugin,
+  type MiokiContext,
+  getService,
+  Services,
+} from "mioku";
 import { MEME_BASE_CONFIG } from "./configs/base";
 import { MEME_FILTER_CONFIG } from "./configs/filters";
 import { MemePluginRuntime, replyWithParts } from "./shared";
@@ -42,8 +46,8 @@ const memePlugin = definePlugin({
   description: "基于 meme-generator API 的表情包制作插件",
 
   async setup(ctx: MiokiContext) {
-    const configService = ctx.services?.config as ConfigService | undefined;
-    const aiService = ctx.services?.ai as AIService | undefined;
+    const configService = getService(ctx, Services.Config);
+    const aiService = getService(ctx, Services.AI);
 
     let baseConfig = cloneConfig(MEME_BASE_CONFIG);
     let filterConfig = cloneConfig(MEME_FILTER_CONFIG);
