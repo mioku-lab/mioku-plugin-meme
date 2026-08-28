@@ -1,6 +1,6 @@
 import {
   definePlugin,
-  type MiokiContext,
+  type MiokuContext,
   getService,
   Services,
 } from "mioku";
@@ -45,7 +45,7 @@ const memePlugin = definePlugin({
   version: "1.0.0",
   description: "基于 meme-generator API 的表情包制作插件",
 
-  async setup(ctx: MiokiContext) {
+  async setup(ctx: MiokuContext) {
     const configService = getService(ctx, Services.Config);
     const aiService = getService(ctx, Services.AI);
 
