@@ -187,10 +187,10 @@ export async function replyWithParts(options: {
   parts: any[];
   quoteReply?: boolean;
 }): Promise<void> {
-  const { event, parts, quoteReply = false } = options;
+  const { ctx, event, parts, quoteReply = false } = options;
   const payload = [...parts];
   if (quoteReply && event?.message_id != null) {
-    payload.unshift({ type: "reply", id: String(event.message_id) });
+    payload.unshift(ctx.segment.reply(event.message_id));
   }
   await event.reply(payload.length === 1 ? payload[0] : payload);
 }
@@ -208,9 +208,7 @@ export async function replyWithImage(options: {
     parts.push(caption);
   }
 
-  const imageSegment = ctx?.segment?.image
-    ? ctx.segment.image(image)
-    : { type: "image", file: image };
+  const imageSegment = ctx.segment.image(image);
   parts.push(imageSegment);
 
   try {
@@ -228,11 +226,7 @@ export async function replyWithImage(options: {
   if (caption) {
     fallbackParts.push(caption);
   }
-  fallbackParts.push(
-    ctx?.segment?.image
-      ? ctx.segment.image(base64Image)
-      : { type: "image", file: base64Image },
-  );
+  fallbackParts.push(ctx.segment.image(base64Image));
   await replyWithParts({ ctx, event, parts: fallbackParts, quoteReply });
 }
 
@@ -244,11 +238,7 @@ export async function sendSkillImage(options: {
   quoteReply?: boolean;
 }): Promise<void> {
   const { ctx, event, image, caption, quoteReply = false } = options;
-  const selfId = event?.self_id != null ? Number(event.self_id) : undefined;
-  const bot =
-    selfId != null && typeof ctx?.pickBot === "function"
-      ? ctx.pickBot(selfId)
-      : undefined;
+  const bot = event?.bot;
 
   if (!bot) {
     throw new Error("当前上下文不支持发送图片");
@@ -257,14 +247,12 @@ export async function sendSkillImage(options: {
   const buildPayload = (file: string) => {
     const payload: any[] = [];
     if (quoteReply && event?.message_id != null) {
-      payload.push({ type: "reply", id: String(event.message_id) });
+      payload.push(ctx.segment.reply(event.message_id));
     }
     if (caption) {
       payload.push(caption);
     }
-    payload.push(
-      ctx?.segment?.image ? ctx.segment.image(file) : { type: "image", file },
-    );
+    payload.push(ctx.segment.image(file));
     return payload;
   };
 
@@ -622,11 +610,7 @@ export class MemePluginRuntime {
         );
         const previewBuffer = Buffer.from(await previewResponse.arrayBuffer());
         const previewBase64 = await imageBufferToBase64(previewBuffer);
-        parts.push(
-          ctx?.segment?.image
-            ? ctx.segment.image(previewBase64)
-            : { type: "image", file: previewBase64 },
-        );
+        parts.push(ctx.segment.image(previewBase64));
       } catch (error) {
         this.logger.warn(`[meme] 获取预览失败: ${error}`);
       }
@@ -978,11 +962,11 @@ export class MemePluginRuntime {
     messageId: number,
   ): Promise<string | null> {
     try {
-      const selfId = event?.self_id != null ? Number(event.self_id) : undefined;
-      if (selfId == null || !ctx?.pickBot) {
+      const bot = event?.bot;
+      if (!bot) {
         return null;
       }
-      const msg = await ctx.pickBot(selfId).getMsg(messageId);
+      const msg = await bot.getMessage(messageId);
       if (!msg?.message || !Array.isArray(msg.message)) {
         return null;
       }
@@ -1013,11 +997,8 @@ export class MemePluginRuntime {
       ];
     }
 
-    const bot =
-      event?.self_id != null && typeof ctx?.pickBot === "function"
-        ? ctx.pickBot(event.self_id)
-        : undefined;
-    if (!bot?.getGroupMemberInfo) {
+    const bot = event?.bot;
+    if (!bot) {
       return atUserIds.map((userId) => ({
         name: String(userId),
         gender: "unknown",
@@ -1027,7 +1008,7 @@ export class MemePluginRuntime {
     const infos = await Promise.all(
       atUserIds.map(async (userId) => {
         try {
-          const member = await bot.getGroupMemberInfo(event.group_id, userId);
+          const member = await bot.getMemberInfo(event.group_id, userId);
           return {
             name: member?.card || member?.nickname || String(userId),
             gender: String(member?.sex || "unknown"),
