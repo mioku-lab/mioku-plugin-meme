@@ -43,7 +43,7 @@ export type MemeImageSourceType = "auto" | "user_avatar" | "message_image";
 export interface MemeImageSourceOptions {
   type?: MemeImageSourceType;
   qq?: number;
-  messageId?: number;
+  messageId?: number | string;
 }
 
 export interface MemeInfoParams {

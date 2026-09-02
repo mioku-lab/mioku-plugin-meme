@@ -33,8 +33,8 @@ function parseImageSource(args: any): {
   }
 
   if (sourceType === "message_image") {
-    const messageId = Number(args?.message_id);
-    if (!Number.isFinite(messageId) || messageId <= 0) {
+    const messageId = String(args?.message_id ?? "").trim();
+    if (!messageId) {
       return {
         ok: false,
         message: "source_type=message_image 时必须提供有效的 message_id。",
@@ -114,9 +114,9 @@ export function createMemeSkills(runtime: MemePluginRuntime): AISkill[] {
                 description: "source_type=user_avatar 时必填，头像对应 QQ 号",
               },
               message_id: {
-                type: "number",
+                type: ["number", "string"],
                 description:
-                  "source_type=message_image 时必填，包含图片的消息 message_id",
+                  "source_type=message_image 时必填，包含图片的消息 message_id（支持数字或含字母的字符串 id）",
               },
             },
             required: ["keyword", "source_type"],

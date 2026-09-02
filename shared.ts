@@ -914,8 +914,8 @@ export class MemePluginRuntime {
     }
 
     if (sourceType === "message_image") {
-      const messageId = Number(source?.messageId);
-      if (!Number.isFinite(messageId) || messageId <= 0) {
+      const messageId = String(source?.messageId ?? "").trim();
+      if (!messageId) {
         return [];
       }
       const imageUrl = await this.getImageUrlByMessageId(ctx, event, messageId);
@@ -959,7 +959,7 @@ export class MemePluginRuntime {
   private async getImageUrlByMessageId(
     ctx: any,
     event: any,
-    messageId: number,
+    messageId: string | number,
   ): Promise<string | null> {
     try {
       const bot = event?.bot;
