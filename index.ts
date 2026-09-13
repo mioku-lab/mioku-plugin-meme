@@ -232,7 +232,7 @@ const memePlugin = definePlugin({
           (/^(?:表情|meme)包?更新$/i.test(commandText) ||
             /^meme\s+更新$/i.test(commandText))
         ) {
-          if (baseConfig.permissions.ownerOnlyUpdate && !ctx.isOwner(event)) {
+          if (baseConfig.permissions.ownerOnlyUpdate && !ctx.isMaster(event)) {
             await notifyByAIRuntime(
               event,
               "用户尝试刷新 meme 缓存，但权限不足。请自然提醒该操作仅主人可用",
