@@ -42,8 +42,6 @@ function stripCommandPrefix(
 
 const memePlugin = definePlugin({
   name: "meme",
-  version: "1.0.0",
-  description: "基于 meme-generator API 的表情包制作插件",
 
   async setup(ctx: MiokuContext) {
     const configService = getService(ctx, Services.Config);
