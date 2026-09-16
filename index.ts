@@ -145,6 +145,96 @@ const memePlugin = definePlugin({
       );
     }
 
+    ctx.command({
+      name: "/meme 菜单",
+      match: /^(?:(?:表情|meme)包?(?:菜单|展示|制作(?:列表)?)|meme\s+(?:菜单|列表|展示))$/i,
+      prefixes: baseConfig.trigger.prefixes,
+      description: "查看已同步的表情菜单",
+      usage: "/meme 菜单",
+      handler: ({ event }) => runtime.sendMenu(ctx, event),
+    });
+    ctx.command({
+      name: "/随机表情",
+      match: /^随机(?:表情|meme)(?:包)?$/i,
+      prefixes: baseConfig.trigger.prefixes,
+      description: "随机生成一个头像类表情",
+      usage: "/随机表情",
+      handler: ({ event }) => runtime.sendRandom(ctx, event),
+    });
+    ctx.command({
+      name: "/meme 帮助",
+      match: /^(?:(?:头像|文字)?(?:表情|meme)包?(?:制作(?:菜单|教程)?|帮助|说明|指令|使用说明)|(?:头像|文字)(?:表情|meme)包?|meme\s+帮助)$/i,
+      prefixes: baseConfig.trigger.prefixes,
+      description: "查看表情制作教程与参数说明",
+      usage: "/meme 帮助",
+      handler: ({ event }) => runtime.sendHelp(ctx, event),
+    });
+    ctx.command({
+      name: "/meme 搜索",
+      match: /^(?:表情|meme)包?(?:搜索|检索)\s*(.*)$/i,
+      prefixes: baseConfig.trigger.prefixes,
+      description: "搜索相关表情关键词",
+      usage: "/meme 搜索 摸",
+      handler: async ({ event, match }) => {
+        const query = String(match?.[1] ?? "").trim();
+        if (!query) {
+          await notifyByAIRuntime(
+            event,
+            "用户发起了 meme 搜索但没有给关键词。请自然提醒他补一个搜索词",
+            "你想搜什么？",
+          );
+          return;
+        }
+        await runtime.sendSearch(ctx, event, query);
+      },
+    });
+    ctx.command({
+      name: "/meme 详情",
+      match: /^meme包?\s+详情\s+(.+)$/i,
+      prefixes: baseConfig.trigger.prefixes,
+      description: "查看表情参数和预览",
+      usage: "/meme 详情 摸头",
+      handler: async ({ event, match }) => {
+        const keyword = String(match?.[1] ?? "").trim();
+        if (!runtime.getDetail(keyword)) {
+          await notifyByAIRuntime(
+            event,
+            `用户查询了不存在的表情详情关键词 "${keyword}"。请自然提醒先搜索可用关键词`,
+            `未找到表情关键词：${keyword}`,
+          );
+          return;
+        }
+        await runtime.sendDetail(ctx, event, keyword);
+      },
+    });
+    ctx.command({
+      name: "/meme 更新",
+      match: /^(?:(?:表情|meme)包?更新|meme\s+更新)$/i,
+      prefixes: baseConfig.trigger.prefixes,
+      permission: baseConfig.permissions.ownerOnlyUpdate ? "master" : "member",
+      description: "刷新远端表情缓存",
+      usage: "/meme 更新",
+      handler: async ({ event }) => {
+        await replyWithParts({
+          ctx,
+          event,
+          parts: ["开始刷新 meme 缓存，请稍等..."],
+          quoteReply: baseConfig.behavior.quoteReply,
+        });
+        try {
+          await runtime.refreshCache();
+          await runtime.sendMenu(ctx, event);
+        } catch (error) {
+          await notifyByAIRuntime(
+            event,
+            `meme 缓存刷新失败，错误信息：${error}。请自然告知用户稍后重试或让管理员检查 meme API 服务状态。`,
+            `刷新 meme 缓存失败：${error}`,
+            error,
+          );
+        }
+      },
+    });
+
     ctx.handle("message", async (event) => {
       const rawText = ctx.text(event)?.trim();
       if (!rawText) {
@@ -167,99 +257,6 @@ const memePlugin = definePlugin({
           : rawText;
 
       try {
-        if (
-          commandText &&
-          (/^(?:表情|meme)包?(?:菜单|展示|制作(?:列表)?)$/i.test(commandText) ||
-            /^meme\s+(?:菜单|列表|展示)$/i.test(commandText))
-        ) {
-          await runtime.sendMenu(ctx, event);
-          return;
-        }
-
-        if (commandText && /^随机(?:表情|meme)(?:包)?$/i.test(commandText)) {
-          await runtime.sendRandom(ctx, event);
-          return;
-        }
-
-        if (
-          commandText &&
-          (/^(?:(?:头像|文字)?(?:表情|meme)包?(?:制作(?:菜单|教程)?|帮助|说明|指令|使用说明)|(?:头像|文字)(?:表情|meme)包?)$/i.test(
-            commandText,
-          ) ||
-            /^meme\s+帮助$/i.test(commandText))
-        ) {
-          await runtime.sendHelp(ctx, event);
-          return;
-        }
-
-        const searchMatch = commandText.match(
-          /^(?:表情|meme)包?(?:搜索|检索)\s*(.*)$/i,
-        );
-        if (searchMatch) {
-          const query = (searchMatch[1] || "").trim();
-          if (!query) {
-            await notifyByAIRuntime(
-              event,
-              "用户发起了 meme 搜索但没有给关键词。请自然提醒他补一个搜索词",
-              "你想搜什么？",
-            );
-            return;
-          }
-          await runtime.sendSearch(ctx, event, query);
-          return;
-        }
-
-        const detailCommandMatch =
-          commandText.match(/^meme包?\s+详情\s+(.+)$/i);
-        if (detailCommandMatch) {
-          const keyword = detailCommandMatch[1].trim();
-          if (!runtime.getDetail(keyword)) {
-            await notifyByAIRuntime(
-              event,
-              `用户查询了不存在的表情详情关键词 "${keyword}"。请自然提醒先搜索可用关键词`,
-              `未找到表情关键词：${keyword}`,
-            );
-            return;
-          }
-          await runtime.sendDetail(ctx, event, keyword);
-          return;
-        }
-
-        if (
-          commandText &&
-          (/^(?:表情|meme)包?更新$/i.test(commandText) ||
-            /^meme\s+更新$/i.test(commandText))
-        ) {
-          if (baseConfig.permissions.ownerOnlyUpdate && !ctx.isMaster(event)) {
-            await notifyByAIRuntime(
-              event,
-              "用户尝试刷新 meme 缓存，但权限不足。请自然提醒该操作仅主人可用",
-              "不支持小男娘使用喵",
-            );
-            return;
-          }
-
-          await replyWithParts({
-            ctx,
-            event,
-            parts: ["开始刷新 meme 缓存，请稍等..."],
-            quoteReply: baseConfig.behavior.quoteReply,
-          });
-
-          try {
-            await runtime.refreshCache();
-            await runtime.sendMenu(ctx, event);
-          } catch (error) {
-            await notifyByAIRuntime(
-              event,
-              `meme 缓存刷新失败，错误信息：${error}。请自然告知用户稍后重试或让管理员检查 meme API 服务状态。`,
-              `刷新 meme 缓存失败：${error}`,
-              error,
-            );
-          }
-          return;
-        }
-
         const genericGenerateMatch = commandText.match(
           /^meme包?\s+(?:生成|制作)\s+(.+)$/i,
         );
