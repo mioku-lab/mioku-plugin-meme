@@ -1,6 +1,6 @@
 {
   "name": "mioku-plugin-meme",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "基于 meme-generator API 的表情包制作插件",
   "main": "index.ts",
   "type": "module",
@@ -15,71 +15,7 @@
     "services": [
       "config",
       "ai"
-    ],
-    "accessHooks": [
-      {
-        "id": "meme-菜单",
-        "match": "/^\\/meme\\s*菜单/"
-      },
-      {
-        "id": "meme-搜索",
-        "match": "/^\\/meme\\s*搜索/"
-      },
-      {
-        "id": "meme-详情",
-        "match": "/^\\/meme\\s*详情/"
-      },
-      {
-        "id": "meme-更新",
-        "match": "/^\\/meme\\s*更新/"
-      },
-      {
-        "id": "随机表情",
-        "match": "/^\\/随机表情/"
-      }
-    ],
-    "help": {
-      "title": "Meme 表情包",
-      "description": "接入 meme-generator API 的表情包制作插件",
-      "commands": [
-        {
-          "cmd": "/meme 菜单",
-          "desc": "查看已同步的表情菜单",
-          "usage": "/meme 菜单",
-          "role": "member"
-        },
-        {
-          "cmd": "/meme 搜索 <关键词>",
-          "desc": "搜索相关表情关键词",
-          "usage": "/meme 搜索 摸",
-          "role": "member"
-        },
-        {
-          "cmd": "/meme 详情 <关键词>",
-          "desc": "查看表情参数和预览",
-          "usage": "/meme 详情 摸头",
-          "role": "member"
-        },
-        {
-          "cmd": "/随机表情",
-          "desc": "随机生成一个头像类表情",
-          "usage": "/随机表情",
-          "role": "member"
-        },
-        {
-          "cmd": "<表情关键词> [文本1/文本2][#参数]",
-          "desc": "直接按关键词生成表情",
-          "usage": "摸头 小明#圆",
-          "role": "member"
-        },
-        {
-          "cmd": "/meme 更新",
-          "desc": "刷新远端表情缓存",
-          "usage": "/meme 更新",
-          "role": "master"
-        }
-      ]
-    }
+    ]
   },
   "peerDependencies": {
     "mioku": "^1.0.0"
